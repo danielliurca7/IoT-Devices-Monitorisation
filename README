@@ -1,0 +1,17 @@
+    Broker-ul MQTT este o imagine de eclipse-mosquitto, ca in laborator.
+    Pentru adaptor am scris un program in python. Acesta se aboneaza la # la broker si cand primeste un mesaj selecteaza campurile care sunt numerice si le introduce in baza de data.
+Totodata acesta verifica variabila de mediu DEBUG_DATA_FLOW pentru a stii daca va loga mesajele primite sau nu. Logarea mesajelor se face cu nivelul INFO(pentru ca asta sunt).
+    In InfluxDB, baza de date se numeste IoT_DB, iar measurements pentru aceasta sunt locatiile de unde se colecteaza date. Totodata am ca tag-uri dispozitivul si lucrul pe care il masuram(label).
+Ca field an value care reprezinta valoarea pentru mediu. Pentru container-ul bazei de data am un volum pentru folder-ul /var/lib/influxdb.
+    La interfata grafica, nu am gasit cum se face o configurare din linie de comanda, asa ca am facut-o din interfata grafica si am salvat folder-ul /var/lib/grafana, care contine toate configurarile.
+Doar montez folderul din directorul curent grafana peste /var/lib/grafana si voila, am datasources si graficele deja configurate.
+    Totodata am creat un script de generare a datelor: IoT_DB/device.py. Acesta genereaza data random intre anumite intervale si le trimite pe topic-uri diferite.
+Nu primit timpul, acesta fiind luat de adaptor. Am testat doar pe formatul din primul exemplu trimiterea unui timestamp si a mers. Sper ca merge si pentru alte formate pe care vreti sa le testati.
+    De notat faptul ca am dezvoltat aceasta tema pe Windows asa ca nu pot garanta ca scriptul run.sh ruleaza corect(pe Linux), dar comenzile separate functioneaza.
+In principiu comenzile sunt urmatoarele:
+    ./run.sh build pentru initializarea nodului swarm
+    ./run.sh run pentru rularea stack-ului
+    ./run.sh stop pentru oprirea stack-ului
+    ./run.sh clear pentru stergerea imaginii adaptorului si stergerea volumului utilizat.
+
+    NOTA: Nu am testat in amanunt toate functionalitatile. Daca nu merge cu swarm docker compose ar trebui sa mearga.

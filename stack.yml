@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+  broker:
+    image: "eclipse-mosquitto"
+    depends_on:
+      - influx
+    ports:
+      - "1883:1883"
+    networks:
+      - broker
+    restart: always
+
+  adaptor:
+    image: "adaptor"
+    depends_on:
+      - broker
+    environment:
+      DEBUG_DATA_FLOW: "false"
+    networks:
+      - broker
+      - adaptor
+    restart: always
+
+  influx:
+    image: "influxdb"
+    environment:
+      INFLUXDB_DB: "IoT_DB"
+      INFLUXDB_META_RETENTION_AUTOCREATE: "true"
+      INFLUXDB_RETENTION_CHECK_INTERVAL: "1s"
+    volumes:
+      - timeseries_data:/var/lib/influxdb
+    networks:
+      - adaptor
+      - database
+    restart: always
+
+  grafana:
+    image: "grafana/grafana"
+    depends_on:
+      - influx
+    ports:
+      - "80:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: asistent
+      GF_SECURITY_ADMIN_PASSWORD: grafanaSPRC2019
+    volumes:
+      - ./grafana:/var/lib/grafana
+    networks:
+      - database
+    restart: always
+    
+
+volumes:
+  timeseries_data: {}
+
+
+networks:
+  broker    : {}
+  adaptor   : {}
+  database  : {}
